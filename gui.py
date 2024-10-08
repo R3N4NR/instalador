@@ -125,8 +125,18 @@ def instalar_programas():
     for comando in comandos:
         listbox.insert(tk.END, f"Executando: {comando}\n")
         listbox.yview(tk.END)
+
+        # Obtém o nome do programa a partir do comando
+        programa_nome = [k for k, v in programas_ids.items() if v in comando][0]  # Busca o nome do programa
+
         try:
-            # Executa o comando e espera até que termine
+            # Verifica se o programa já está instalado antes de executar
+            resultado_verificacao = subprocess.run(f'winget list {id_programa}', check=False, shell=True, capture_output=True, text=True)
+            if id_programa in resultado_verificacao.stdout:
+                listbox.insert(tk.END, f"{programa_nome} já está instalado!\n")  # Usar o nome do programa
+                continue  # Pula para o próximo programa
+
+            # Executa o comando de instalação
             resultado = subprocess.run(comando, check=True, shell=True, capture_output=True, text=True)
             # Se a execução for bem-sucedida, adicione uma mensagem de sucesso
             listbox.insert(tk.END, "Instalação bem-sucedida!\n")
@@ -134,10 +144,11 @@ def instalar_programas():
         except subprocess.CalledProcessError as e:
             # Se houver erro, adicione uma mensagem de erro
             listbox.insert(tk.END, f"Erro ao instalar: {str(e)}\n")
-            continue
+            break  # Saia do loop em caso de erro
 
     # Atualiza a interface após a conclusão da instalação
     root.after(0, lambda: messagebox.showinfo("Concluído", "Instalação concluída!\n" + "\n".join(listbox.get(0, tk.END))))
+
 
 
 # Criando a janela principal
