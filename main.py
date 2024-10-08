@@ -1,7 +1,4 @@
-from gui import App
-import tkinter as tk
+from gui import root  # Certifique-se de que `root` é a instância da sua janela Tk.
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = App(root)
-    root.mainloop()
+    root.mainloop()  # Inicia a aplicação.
